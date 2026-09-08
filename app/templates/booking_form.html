@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Book Equipment | CampusEquip
+{% endblock %}
+
+{% block page_heading %}
+    Request Equipment
+{% endblock %}
+
+{% block content %}
+
+<div class="card form-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <div class="card-title">
+                {{ equipment.name }}
+            </div>
+
+            <div class="card-subtitle">
+                {{ equipment.category }}
+                ·
+                {{ equipment.available_quantity }}
+                available
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <form method="POST">
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Quantity
+            </label>
+
+            <input
+                type="number"
+                name="quantity"
+                class="form-control"
+                min="1"
+                max="{{ equipment.available_quantity }}"
+                value="1"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Start Date
+            </label>
+
+            <input
+                type="datetime-local"
+                name="start_date"
+                class="form-control"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Expected Return Date
+            </label>
+
+            <input
+                type="datetime-local"
+                name="expected_return_date"
+                class="form-control"
+                required
+            >
+
+        </div>
+
+
+        <div
+            style="
+                background:#eff6ff;
+                border:1px solid #bfdbfe;
+                border-radius:10px;
+                padding:14px;
+                margin-bottom:20px;
+                font-size:13px;
+                color:#1e40af;
+            "
+        >
+            Your request will be sent to an administrator
+            for approval.
+        </div>
+
+
+        <div style="display:flex; gap:10px;">
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Submit Booking Request
+            </button>
+
+            <a
+                href="{{ url_for('main.equipment_list') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

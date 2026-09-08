@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Dashboard | CampusEquip
+{% endblock %}
+
+{% block page_heading %}
+    Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-intro">
+
+    <div>
+        <h2>
+            Good to see you, {{ current_user.username }} 👋
+        </h2>
+
+        <p class="card-subtitle">
+            {% if current_user.role == "admin" %}
+                Manage campus equipment, bookings, and returns from one place.
+            {% else %}
+                Browse available equipment and manage your bookings.
+            {% endif %}
+        </p>
+    </div>
+
+</div>
+
+
+<!-- Statistics -->
+
+<div class="stats-grid">
+
+    {% if current_user.role == "admin" %}
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Equipment
+            </span>
+
+            <div class="stat-value">
+                {{ equipment_count }}
+            </div>
+
+            <span class="stat-description">
+                Registered equipment
+            </span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Pending
+            </span>
+
+            <div class="stat-value">
+                {{ pending_count }}
+            </div>
+
+            <span class="stat-description">
+                Booking requests
+            </span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Active
+            </span>
+
+            <div class="stat-value">
+                {{ active_count }}
+            </div>
+
+            <span class="stat-description">
+                Active loans
+            </span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Late
+            </span>
+
+            <div class="stat-value">
+                {{ late_count }}
+            </div>
+
+            <span class="stat-description">
+                Late returns
+            </span>
+        </div>
+
+    {% else %}
+
+        <div class="stat-card">
+            <span class="stat-label">
+                My Bookings
+            </span>
+
+            <div class="stat-value">
+                {{ booking_count }}
+            </div>
+
+            <span class="stat-description">
+                Total bookings
+            </span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Requested
+            </span>
+
+            <div class="stat-value">
+                {{ requested_count }}
+            </div>
+
+            <span class="stat-description">
+                Awaiting approval
+            </span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Active
+            </span>
+
+            <div class="stat-value">
+                {{ active_count }}
+            </div>
+
+            <span class="stat-description">
+                Current loans
+            </span>
+        </div>
+
+        <div class="stat-card">
+            <span class="stat-label">
+                Available
+            </span>
+
+            <div class="stat-value">
+                {{ available_equipment_count }}
+            </div>
+
+            <span class="stat-description">
+                Equipment items
+            </span>
+        </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- Quick actions -->
+
+<div class="card-header">
+    <div>
+        <div class="card-title">
+            Quick Actions
+        </div>
+
+        <div class="card-subtitle">
+            Common tasks and shortcuts
+        </div>
+    </div>
+</div>
+
+
+<div class="quick-actions">
+
+    <a
+        href="{{ url_for('main.equipment_list') }}"
+        class="quick-action"
+    >
+
+        <div class="quick-icon">
+            ▣
+        </div>
+
+        <div>
+            <strong>
+                Browse Equipment
+            </strong>
+
+            <span>
+                View available campus equipment
+            </span>
+        </div>
+
+    </a>
+
+
+    <a
+        href="{{ url_for('main.my_bookings') }}"
+        class="quick-action"
+    >
+
+        <div class="quick-icon">
+            ▤
+        </div>
+
+        <div>
+            <strong>
+                My Bookings
+            </strong>
+
+            <span>
+                Track your equipment requests
+            </span>
+        </div>
+
+    </a>
+
+
+    {% if current_user.role == "admin" %}
+
+        <a
+            href="{{ url_for('main.add_equipment') }}"
+            class="quick-action"
+        >
+
+            <div class="quick-icon">
+                ＋
+            </div>
+
+            <div>
+                <strong>
+                    Add Equipment
+                </strong>
+
+                <span>
+                    Register new campus equipment
+                </span>
+            </div>
+
+        </a>
+
+
+        <a
+            href="{{ url_for('main.admin_bookings') }}"
+            class="quick-action"
+        >
+
+            <div class="quick-icon">
+                ✓
+            </div>
+
+            <div>
+                <strong>
+                    Manage Bookings
+                </strong>
+
+                <span>
+                    Approve and manage requests
+                </span>
+            </div>
+
+        </a>
+
+    {% endif %}
+
+</div>
+
+
+<!-- Recent activity -->
+
+<div class="card table-card">
+
+    <div class="card-header" style="padding: 24px 24px 0;">
+
+        <div>
+            <div class="card-title">
+                Recent Bookings
+            </div>
+
+            <div class="card-subtitle">
+                Your latest booking activity
+            </div>
+        </div>
+
+        <a
+            href="{{ url_for('main.my_bookings') }}"
+            class="btn btn-secondary btn-sm"
+        >
+            View All
+        </a>
+
+    </div>
+
+
+    {% if recent_bookings %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Equipment</th>
+                        <th>Quantity</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for booking in recent_bookings %}
+
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    {{ booking.equipment.name }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ booking.quantity }}
+                            </td>
+
+                            <td>
+
+                                {% if booking.status == "REQUESTED" %}
+                                    <span class="badge badge-requested">
+                                        Requested
+                                    </span>
+
+                                {% elif booking.status == "APPROVED" %}
+                                    <span class="badge badge-approved">
+                                        Approved
+                                    </span>
+
+                                {% elif booking.status == "ACTIVE" %}
+                                    <span class="badge badge-active">
+                                        Active
+                                    </span>
+
+                                {% elif booking.status == "REJECTED" %}
+                                    <span class="badge badge-rejected">
+                                        Rejected
+                                    </span>
+
+                                {% elif booking.status == "LATE" %}
+                                    <span class="badge badge-late">
+                                        Late
+                                    </span>
+
+                                {% elif booking.status == "RETURNED" %}
+                                    <span class="badge badge-returned">
+                                        Returned
+                                    </span>
+
+                                {% else %}
+                                    <span class="badge">
+                                        {{ booking.status }}
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ booking.start_date.strftime("%b %d, %Y") }}
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-state-icon">
+                📦
+            </div>
+
+            <h3>
+                No bookings yet
+            </h3>
+
+            <p>
+                Start by browsing the available campus equipment.
+            </p>
+
+            <a
+                href="{{ url_for('main.equipment_list') }}"
+                class="btn btn-primary"
+            >
+                Browse Equipment
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

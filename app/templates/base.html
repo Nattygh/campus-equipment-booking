@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}CampusEquip{% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+<body>
+
+{% if current_user.is_authenticated %}
+
+<div class="app-shell">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div>
+
+            <!-- BRAND -->
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    CE
+                </div>
+
+                <div>
+                    <h2>CampusEquip</h2>
+
+                    <span>
+                        Equipment Booking System
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+
+            <nav class="sidebar-nav">
+
+                <div class="nav-section">
+                    MAIN
+                </div>
+
+
+                <!-- Dashboard -->
+
+                <a
+                    href="{{ url_for('main.dashboard') }}"
+                    class="nav-item
+                    {% if request.endpoint == 'main.dashboard' %}
+                        active
+                    {% endif %}"
+                >
+
+                    <span class="nav-icon">
+                        ⌂
+                    </span>
+
+                    Dashboard
+
+                </a>
+
+
+                <!-- Equipment -->
+
+                <a
+                    href="{{ url_for('main.equipment_list') }}"
+                    class="nav-item
+                    {% if request.endpoint in ['main.equipment_list', 'main.create_booking', 'main.edit_equipment', 'main.add_equipment'] %}
+                        active
+                    {% endif %}"
+                >
+
+                    <span class="nav-icon">
+                        ▣
+                    </span>
+
+                    Equipment
+
+                </a>
+
+
+                <!-- My Bookings -->
+
+                <a
+                    href="{{ url_for('main.my_bookings') }}"
+                    class="nav-item
+                    {% if request.endpoint == 'main.my_bookings' %}
+                        active
+                    {% endif %}"
+                >
+
+                    <span class="nav-icon">
+                        ▤
+                    </span>
+
+                    My Bookings
+
+                </a>
+
+
+                {% if current_user.is_admin %}
+
+                    <div class="nav-section">
+                        ADMINISTRATION
+                    </div>
+
+
+                    <!-- Manage Bookings -->
+
+                    <a
+                        href="{{ url_for('main.admin_bookings') }}"
+                        class="nav-item
+                        {% if request.endpoint in [
+                            'main.admin_bookings',
+                            'main.approve_booking',
+                            'main.reject_booking',
+                            'main.activate_booking',
+                            'main.return_booking'
+                        ] %}
+                            active
+                        {% endif %}"
+                    >
+
+                        <span class="nav-icon">
+                            ✓
+                        </span>
+
+                        Manage Bookings
+
+                    </a>
+
+
+                    <!-- Add Equipment -->
+
+                    <a
+                        href="{{ url_for('main.add_equipment') }}"
+                        class="nav-item
+                        {% if request.endpoint == 'main.add_equipment' %}
+                            active
+                        {% endif %}"
+                    >
+
+                        <span class="nav-icon">
+                            ＋
+                        </span>
+
+                        Add Equipment
+
+                    </a>
+
+                {% endif %}
+
+            </nav>
+
+        </div>
+
+
+        <!-- ================= USER AREA ================= -->
+
+        <div class="sidebar-bottom">
+
+            <div class="user-mini">
+
+                <div class="avatar avatar-small">
+
+                    {{ current_user.username[0]|upper }}
+
+                </div>
+
+
+                <div class="user-mini-info">
+
+                    <strong>
+                        {{ current_user.username }}
+                    </strong>
+
+
+                    {% if current_user.is_admin %}
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    {% else %}
+
+                        <span>
+                            Student
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="{{ url_for('main.logout') }}"
+                class="logout-link"
+            >
+
+                ⇥ &nbsp; Logout
+
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main-content">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+
+                <div class="topbar-label">
+                    Campus Equipment Management
+                </div>
+
+
+                <h1>
+
+                    {% block page_title %}
+                        Dashboard
+                    {% endblock %}
+
+                </h1>
+
+            </div>
+
+
+            <div class="topbar-user">
+
+                <div class="avatar avatar-small">
+
+                    {{ current_user.username[0]|upper }}
+
+                </div>
+
+                {{ current_user.username }}
+
+            </div>
+
+        </header>
+
+
+        <!-- FLASH MESSAGES -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                <div class="flash-container">
+
+                    {% for message in messages %}
+
+                        <div class="flash-message">
+
+                            {{ message }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- PAGE CONTENT -->
+
+        <section class="page-content">
+
+            {% block content %}
+
+            {% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+
+{% else %}
+
+
+<!-- =====================================================
+     PUBLIC / AUTHENTICATION PAGES
+     ===================================================== -->
+
+{% with messages = get_flashed_messages() %}
+
+    {% if messages %}
+
+        <div class="flash-container">
+
+            {% for message in messages %}
+
+                <div class="flash-message">
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+{% endwith %}
+
+
+{% block public_content %}
+
+{% endblock %}
+
+
+{% endif %}
+
+
+</body>
+
+</html>
