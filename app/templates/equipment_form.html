@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ title }} | CampusEquip
+{% endblock %}
+
+{% block page_heading %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="card form-card">
+
+    <div class="card-header">
+
+        <div>
+            <div class="card-title">
+                {{ title }}
+            </div>
+
+            <div class="card-subtitle">
+                Enter the equipment information below.
+            </div>
+        </div>
+
+    </div>
+
+
+    <form method="POST">
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Equipment Name
+            </label>
+
+            <input
+                type="text"
+                name="name"
+                class="form-control"
+                data-testid="equipment-name-input"
+                value="{{ equipment.name if equipment else '' }}"
+                placeholder="e.g. Dell Laptop"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Category
+            </label>
+
+            <input
+                type="text"
+                name="category"
+                class="form-control"
+                data-testid="equipment-category-input"
+                value="{{ equipment.category if equipment else '' }}"
+                placeholder="e.g. Computer"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label class="form-label">
+                Total Quantity
+            </label>
+
+            <input
+                type="number"
+                name="quantity"
+                class="form-control"
+                data-testid="equipment-quantity-input"
+                min="1"
+                value="{{ equipment.quantity if equipment else 1 }}"
+                required
+            >
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    name="maintenance"
+                    data-testid="equipment-maintenance-input"
+                    {% if equipment and equipment.maintenance %}
+                        checked
+                    {% endif %}
+                >
+
+                Under maintenance
+
+            </label>
+
+        </div>
+
+
+        <div style="display:flex; gap:10px;">
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                data-testid="save-equipment-submit"
+            >
+                Save Equipment
+            </button>
+
+            <a
+                href="{{ url_for('main.equipment_list') }}"
+                class="btn btn-secondary"
+            >
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

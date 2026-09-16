@@ -1,0 +1,416 @@
+{% extends "base.html" %}
+
+{% block title %}
+Manage Bookings | CampusEquip
+{% endblock %}
+
+{% block page_title %}
+Manage Bookings
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-intro">
+
+    <h2>
+        Booking Management
+    </h2>
+
+    <p
+        style="
+            color: var(--espresso-muted);
+            font-size: 12px;
+            margin-top: 4px;
+        "
+    >
+        Review, approve and manage equipment booking requests.
+    </p>
+
+</div>
+
+
+<!-- =====================================================
+     SUMMARY
+     ===================================================== -->
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-label">
+            Total Bookings
+        </div>
+
+        <div class="stat-value">
+            {{ bookings|length }}
+        </div>
+
+        <div class="stat-description">
+            All booking requests
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-label">
+            Pending
+        </div>
+
+        <div class="stat-value">
+            {{ bookings|selectattr('status', 'equalto', 'REQUESTED')|list|length }}
+        </div>
+
+        <div class="stat-description">
+            Awaiting approval
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-label">
+            Active
+        </div>
+
+        <div class="stat-value">
+            {{ bookings|selectattr('status', 'equalto', 'ACTIVE')|list|length }}
+        </div>
+
+        <div class="stat-description">
+            Currently borrowed
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-label">
+            Returned
+        </div>
+
+        <div class="stat-value">
+            {{ bookings|selectattr('status', 'equalto', 'RETURNED')|list|length }}
+        </div>
+
+        <div class="stat-description">
+            Successfully returned
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     BOOKING TABLE
+     ===================================================== -->
+
+<div class="card table-card">
+
+    <div
+        class="card-header"
+        style="padding: 24px 24px 0;"
+    >
+
+        <div>
+
+            <div class="card-title">
+                All Booking Requests
+            </div>
+
+            <div class="card-subtitle">
+                Review the current state of every booking.
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% if bookings %}
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        User
+                    </th>
+
+                    <th>
+                        Equipment
+                    </th>
+
+                    <th>
+                        Quantity
+                    </th>
+
+                    <th>
+                        Start
+                    </th>
+
+                    <th>
+                        End
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for booking in bookings %}
+
+                <tr data-testid="admin-booking-row-{{ booking.id }}">
+
+                    <!-- USER -->
+
+                    <td>
+
+                        <strong
+                            style="
+                                color: var(--espresso);
+                            "
+                        >
+                            {{ booking.user.username }}
+                        </strong>
+
+                    </td>
+
+
+                    <!-- EQUIPMENT -->
+
+                    <td>
+
+                        {{ booking.equipment.name }}
+
+                    </td>
+
+
+                    <!-- QUANTITY -->
+
+                    <td>
+
+                        {{ booking.quantity }}
+
+                    </td>
+
+
+                    <!-- START -->
+
+                    <td>
+
+                        {{ booking.start_date.strftime('%Y-%m-%d %H:%M') }}
+
+                    </td>
+
+
+                    <!-- END -->
+
+                    <td>
+
+                        {{ booking.expected_return_date.strftime('%Y-%m-%d %H:%M') }}
+
+                    </td>
+
+
+                    <!-- STATUS -->
+
+                    <td data-testid="admin-booking-status-{{ booking.id }}">
+
+                        {% if booking.status == 'REQUESTED' %}
+
+                            <span class="badge badge-requested">
+                                Requested
+                            </span>
+
+                        {% elif booking.status == 'APPROVED' %}
+
+                            <span class="badge badge-approved">
+                                Approved
+                            </span>
+
+                        {% elif booking.status == 'ACTIVE' %}
+
+                            <span class="badge badge-active">
+                                Active
+                            </span>
+
+                        {% elif booking.status == 'LATE' %}
+
+                            <span class="badge badge-late">
+                                Late
+                            </span>
+
+                        {% elif booking.status == 'RETURNED' %}
+
+                            <span class="badge badge-returned">
+                                Returned
+                            </span>
+
+                        {% elif booking.status == 'REJECTED' %}
+
+                            <span class="badge badge-rejected">
+                                Rejected
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge">
+                                {{ booking.status }}
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+
+                    <td>
+
+                        <div
+                            style="
+                                display: flex;
+                                gap: 6px;
+                                flex-wrap: wrap;
+                            "
+                        >
+
+                            {% if booking.status == 'REQUESTED' %}
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('main.approve_booking', booking_id=booking.id) }}"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-success btn-sm"
+                                        data-testid="approve-booking-{{ booking.id }}"
+                                    >
+                                        Approve
+                                    </button>
+
+                                </form>
+
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('main.reject_booking', booking_id=booking.id) }}"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        data-testid="reject-booking-{{ booking.id }}"
+                                    >
+                                        Reject
+                                    </button>
+
+                                </form>
+
+                            {% elif booking.status == 'APPROVED' %}
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('main.activate_booking', booking_id=booking.id) }}"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-primary btn-sm"
+                                        data-testid="activate-booking-{{ booking.id }}"
+                                    >
+                                        Activate
+                                    </button>
+
+                                </form>
+
+                            {% elif booking.status == 'ACTIVE' or booking.status == 'LATE' %}
+
+                                <form
+                                    method="POST"
+                                    action="{{ url_for('main.return_booking', booking_id=booking.id) }}"
+                                >
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-success btn-sm"
+                                        data-testid="return-booking-{{ booking.id }}"
+                                    >
+                                        Return
+                                    </button>
+
+                                </form>
+
+                            {% else %}
+
+                                <span
+                                    style="
+                                        color: var(--espresso-muted);
+                                        font-size: 10px;
+                                    "
+                                >
+                                    No actions
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-state-icon">
+                ▤
+            </div>
+
+            <h3>
+                No bookings yet
+            </h3>
+
+            <p>
+                Booking requests will appear here
+                when students submit them.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+

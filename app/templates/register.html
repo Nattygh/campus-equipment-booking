@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}
+Register | CampusEquip
+{% endblock %}
+
+
+{% block public_content %}
+
+<div class="public-page">
+
+    <div class="auth-card">
+
+        <!-- BRAND -->
+
+        <div class="auth-brand">
+
+            <div class="brand-icon">
+                CE
+            </div>
+
+            <h1>
+                Create Account
+            </h1>
+
+            <p>
+                Join CampusEquip to book campus equipment.
+            </p>
+
+        </div>
+
+
+        <!-- REGISTRATION FORM -->
+
+        <form method="POST">
+
+
+            <!-- USERNAME -->
+
+            <div class="form-group">
+
+                <label
+                    class="form-label"
+                    for="username"
+                >
+                    Username
+                </label>
+
+
+                <input
+                    class="form-control"
+                    type="text"
+                    id="username"
+                    name="username"
+                    data-testid="username-input"
+                    placeholder="Choose a username"
+                    required
+                    autocomplete="username"
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label
+                    class="form-label"
+                    for="password"
+                >
+                    Password
+                </label>
+
+
+                <input
+                    class="form-control"
+                    type="password"
+                    id="password"
+                    name="password"
+                    data-testid="password-input"
+                    placeholder="Create a password"
+                    required
+                    autocomplete="new-password"
+                >
+
+            </div>
+
+
+            <!-- SUBMIT -->
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+                style="width: 100%;"
+                data-testid="register-submit"
+            >
+
+                Create Account
+
+            </button>
+
+        </form>
+
+
+        <!-- LOGIN LINK -->
+
+        <div class="divider"></div>
+
+
+        <p
+            style="
+                text-align: center;
+                color: var(--espresso-muted);
+                font-size: 12px;
+            "
+        >
+
+            Already have an account?
+
+            <a
+                href="{{ url_for('main.login') }}"
+                style="
+                    color: var(--terracotta);
+                    font-weight: 700;
+                "
+            >
+
+                Sign in
+
+            </a>
+
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

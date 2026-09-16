@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: equipment-booking-jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ci-net
+
+  selenium-chrome:
+    image: selenium/standalone-chrome:latest
+    container_name: equipment-booking-selenium
+    ports:
+      - "4444:4444"
+    shm_size: "2g"
+    networks:
+      - ci-net
+
+networks:
+  ci-net:
+    driver: bridge
+
+volumes:
+  jenkins_home:

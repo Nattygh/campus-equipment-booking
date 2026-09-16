@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}
+    My Bookings | CampusEquip
+{% endblock %}
+
+{% block page_heading %}
+    My Bookings
+{% endblock %}
+
+{% block content %}
+
+<div class="card-header">
+
+    <div>
+        <div class="card-title">
+            Booking History
+        </div>
+
+        <div class="card-subtitle">
+            Track your equipment requests and current loans.
+        </div>
+    </div>
+
+    <a
+        href="{{ url_for('main.equipment_list') }}"
+        class="btn btn-primary"
+    >
+        ＋ New Booking
+    </a>
+
+</div>
+
+
+<div class="card table-card">
+
+    {% if bookings %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Equipment</th>
+                        <th>Quantity</th>
+                        <th>Start</th>
+                        <th>Expected Return</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for booking in bookings %}
+
+                        <tr data-testid="booking-row-{{ booking.id }}">
+
+                            <td>
+                                <strong>
+                                    {{ booking.equipment.name }}
+                                </strong>
+
+                                <div class="card-subtitle">
+                                    {{ booking.equipment.category }}
+                                </div>
+                            </td>
+
+                            <td>
+                                {{ booking.quantity }}
+                            </td>
+
+                            <td>
+                                {{ booking.start_date.strftime("%b %d, %Y %H:%M") }}
+                            </td>
+
+                            <td>
+                                {{ booking.expected_return_date.strftime("%b %d, %Y %H:%M") }}
+                            </td>
+
+                            <td data-testid="booking-status-{{ booking.id }}">
+
+                                {% if booking.status == "REQUESTED" %}
+
+                                    <span class="badge badge-requested">
+                                        Requested
+                                    </span>
+
+                                {% elif booking.status == "APPROVED" %}
+
+                                    <span class="badge badge-approved">
+                                        Approved
+                                    </span>
+
+                                {% elif booking.status == "ACTIVE" %}
+
+                                    <span class="badge badge-active">
+                                        Active
+                                    </span>
+
+                                {% elif booking.status == "LATE" %}
+
+                                    <span class="badge badge-late">
+                                        Late
+                                    </span>
+
+                                {% elif booking.status == "REJECTED" %}
+
+                                    <span class="badge badge-rejected">
+                                        Rejected
+                                    </span>
+
+                                {% elif booking.status == "RETURNED" %}
+
+                                    <span class="badge badge-returned">
+                                        Returned
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge">
+                                        {{ booking.status }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if booking.status in ["REQUESTED", "APPROVED"] %}
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('main.cancel_booking', booking_id=booking.id) }}"
+                                    >
+                                        <button
+                                            type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            data-testid="cancel-booking-{{ booking.id }}"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </form>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-state-icon">
+                📋
+            </div>
+
+            <h3>
+                No bookings yet
+            </h3>
+
+            <p>
+                You haven't requested any equipment.
+            </p>
+
+            <a
+                href="{{ url_for('main.equipment_list') }}"
+                class="btn btn-primary"
+            >
+                Browse Equipment
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

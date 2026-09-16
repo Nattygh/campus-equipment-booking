@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit-and-integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint (syntax check)
+        run: python -m py_compile $(git ls-files '*.py')
+
+      - name: Run unit tests with coverage
+        run: |
+          python -m pytest tests/unit --cov=app --cov-branch \
+            --cov-report=xml --cov-report=term --junitxml=unit-results.xml
+
+      - name: Run integration tests
+        run: |
+          python -m pytest tests/integration --cov=app --cov-branch --cov-append \
+            --cov-report=xml --cov-report=term --junitxml=integration-results.xml
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-integration-results
+          path: |
+            unit-results.xml
+            integration-results.xml
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: unit-and-integration
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - uses: browser-actions/setup-chrome@v1
+      - uses: nanasess/setup-chromedriver@v2
+
+      - name: Run Selenium E2E tests
+        run: python -m pytest tests/e2e --junitxml=e2e-results.xml -v
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-results
+          path: e2e-results.xml
